@@ -1,0 +1,15 @@
+{
+  "name": "mal-hariulah",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Монгол өвөлжөөний бодит газар дээр мал хариулах 3D тоглоом",
+  "scripts": {
+    "make": "node build.mjs",
+    "start": "node build.mjs && node server.mjs",
+    "deploy": "node build.mjs && vercel deploy --prod"
+  },
+  "devDependencies": {
+    "vercel": "^65.12.1"
+  }
+}
