@@ -52,6 +52,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 }
 .mission b { color: var(--gold); }
 .act.fs { padding: 10px 14px; font-size: 18px; }
+.act.shoot { background: #b3261e; color: #fff; border-color: #b3261e; font-size: 17px; padding: 14px 22px; }
 .rotate { color: var(--gold) !important; font-weight: 700; }
 @media (max-width: 640px), (max-height: 480px) { .act { padding: 10px 14px; font-size: 14px; } .actions { gap: 8px; } .card { padding: 18px; } .card h2 { font-size: 26px; } .card ul { font-size: 13px; } }
 .act.sleep { background: var(--gold); color: #1d1405; border-color: var(--gold); font-size: 17px; padding: 14px 22px; }
@@ -114,7 +115,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   <h1>Мал хариулах</h1>
   <p id="coords">49.12215° N · 104.6872° E</p>
 </div>
-<div class="mission" id="mission"><span id="clock">1-р өдөр · 16:00 · Өдөр</span> · Хонь ямаа хашаанд: <b id="penned">0</b>/<span id="total">0</span><span id="tolInfo"></span><span id="homeInfo"></span></div>
+<div class="mission" id="mission"><span id="clock">1-р өдөр · 06:00 · Өглөө</span> · Хонь ямаа хашаанд: <b id="penned">0</b>/<span id="total">0</span><span id="tolInfo"></span><span id="homeInfo"></span></div>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="fade" id="fade" aria-hidden="true"></div>
 <div class="mapbox"><canvas id="minimap" width="300" height="300" aria-label="Жижиг газрын зураг"></canvas><small>Хойд зүг ↑ · 2 км</small></div>
@@ -122,11 +123,12 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 <div class="joy" id="joy" hidden><i id="knob"></i></div>
 <div class="keys" id="keys" hidden>
   <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> эсвэл сумнууд — морь удирдах<br>
-  <kbd>Shift</kbd> — давхих · <kbd>Space</kbd> — исгэрэх · <kbd>M</kbd> — морь/мотоцикл · <kbd>E</kbd> — төл авах<br>
+  <kbd>Shift</kbd> — давхих · <kbd>Space</kbd> — исгэрэх · <kbd>M</kbd> — морь/мотоцикл · <kbd>E</kbd> — төл авах · <kbd>F</kbd> — буудах<br>
   Хулганаар чирж камер эргүүлэх
 </div>
 <div class="actions">
   <button class="act sleep" id="tolBtn" hidden>🍼 Төл авах</button>
+  <button class="act shoot" id="shootBtn" hidden>💥 Буудах</button>
   <button class="act fs" id="fsBtn" aria-label="Бүтэн дэлгэц">⛶</button>
   <button class="act sleep" id="sleepBtn" hidden>🌙 Унтах</button>
   <span class="speed" id="speed">0 км/ц</span>
@@ -147,6 +149,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
       <li>Хурга, ишиг, тугал хашаандаа байна. Унага эхээ дагаж явна.</li>
       <li>Гэрийн дэргэд <b>Мотоцикл</b> товч (M) дарж морь, мотоцикл хоёрыг сольж унана. Мотоцикл 70 км/ц хүртэл хурдална.</li>
       <li>Өдөр азаргын сүрэгт ойртвол азарга дайрна!</li>
+      <li>🐺 Бүх мал хашаанд орсны дараа шөнө 2 чоно 2 удаа ирнэ. Нохой хуцаж хөөнө. Чоно ойртоход <b>Буудах</b> (F) дарж үргээ. Үргээхгүй бол чоно мал бариад явна.</li>
       <li>Бүх малаа хашаалсны дараа гэртээ очоод <b>Унтах</b> товч (U) дарахад өглөө болж, мал бэлчээр лүүгээ гарна.</li>
     </ul>
     <p class="data" id="dataNote">Газрын гадарга: SRTM 30 метрийн бодит өндөр (2×2 км), алсын уулс 6 км хүртэл. Тариалан, горхи, шороон зам, хөрш айлын өвөлжөө, чулуун овоо, ганц модыг хиймэл дагуулын зургаас (Esri World Imagery) тойм зурж оруулсан. Ой модыг таны тэмдэглэсэн хэсгүүдэд хиймэл дагуулын зураг дээрх модны байрлалаар тарьсан. Их зам: OpenStreetMap. Хавар. Өвөлжөө: 2 гэр, 2 банхар нохой; 300 хонь, 200 ямаа, хашаанд 97 хурга ишиг; 49 үхэр, 5 тугал; тусдаа бэлчих 10 морь; 1 хээр азарга, 17 гүү, 7 унагатай азаргын сүрэг.</p>
@@ -612,12 +615,12 @@ function poseHerd(h, t) {
 const around = (cx, cz, r) => () => { const a = Math.random() * 6.28, d = Math.sqrt(Math.random()) * r; return { x: cx + Math.cos(a) * d, z: cz + Math.sin(a) * d }; };
 const SHEEP0 = { x: -90, z: -200 };
 const WIN_N = 490;
-const sheep = makeHerd("sheep", 300, around(SHEEP0.x, SHEEP0.z, 20), 0);
-const goats = makeHerd("goat", 200, around(SHEEP0.x + 6, SHEEP0.z - 4, 18), 0);
+const sheep = makeHerd("sheep", 300, () => ({ x: H.x + (Math.random() - .5) * (H.w - 3), z: H.z + (Math.random() - .5) * (H.d - 3) }), 0);
+const goats = makeHerd("goat", 200, () => ({ x: H.x + (Math.random() - .5) * (H.w - 3), z: H.z + (Math.random() - .5) * (H.d - 3) }), 0);
 goats.animals.forEach((a) => (a.goat = true));
 const FLOCK = sheep.animals.concat(goats.animals);
 const COWS0 = { x: 145, z: 560 }, GELD0 = { x: 609, z: 229 }, HAREM0 = { x: 680, z: 294 };
-const cows = makeHerd("cow", 49, around(COWS0.x, COWS0.z, 35), 0);
+const cows = makeHerd("cow", 49, () => ({ x: CP.x + (Math.random() - .5) * (CP.w - 2.5), z: CP.z + (Math.random() - .5) * (CP.d - 2.5) }), 0);
 const inRect = (r, m) => () => ({ x: r.x + (Math.random() - .5) * (r.w - m * 2), z: r.z + (Math.random() - .5) * (r.d - m * 2) });
 // хашаандаа байгаа төл (шинэ төлд нөөц байр)
 const TOL0 = { lamb: 58, kid: 39, calf: 5 }, TOL_SPARE = 30;
@@ -625,14 +628,14 @@ const calves = makeHerd("cow", TOL0.calf + TOL_SPARE, inRect(CP, 1.2), 1, .55);
 const lambs = makeHerd("sheep", TOL0.lamb + TOL_SPARE, inRect(H, 1.5), 1, .5);
 const kids = makeHerd("goat", TOL0.kid + TOL_SPARE, inRect(H, 1.5), 1, .5);
 for (const [h, n] of [[calves, TOL0.calf], [lambs, TOL0.lamb], [kids, TOL0.kid]]) h.animals.slice(n).forEach((a) => (a.hidden = true));
-const geldings = makeHerd("horse", 10, around(GELD0.x, GELD0.z, 22), 0);                  // насанд хүрсэн морьд
-const mares = makeHerd("horse", 24, around(HAREM0.x, HAREM0.z, 22), 7 / 24, .58);           // 17 гүү, 7 унага
-const stallion = makeHerd("horse", 1, around(HAREM0.x, HAREM0.z, 6), 0, 1, { stallion: true, pal: "stallion", scale: 1.1 });
+const geldings = makeHerd("horse", 10, around(172, 74, 12), 0);                  // насанд хүрсэн морьд
+const mares = makeHerd("horse", 24, () => ({ x: PENS.horse.x + (Math.random() - .5) * (PENS.horse.w - 3), z: PENS.horse.z + (Math.random() - .5) * (PENS.horse.d - 3) }), 7 / 24, .58);           // 17 гүү, 7 унага
+const stallion = makeHerd("horse", 1, around(PENS.horse.x, PENS.horse.z, 4), 0, 1, { stallion: true, pal: "stallion", scale: 1.1 });
 const horses = { animals: geldings.animals.concat(mares.animals, stallion.animals) };
 const GROUPS = {
-  cows:  { name: "Үхэр", pasture: COWS0, home: { x: CP.x, z: CP.z }, pen: CP, r: 45, hr: 13, state: "pasture", speed: 1.7, list: () => cows.animals },
-  geld:  { name: "Морьд", pasture: GELD0, home: { x: 172, z: 74 }, r: 38, hr: 13, state: "pasture", speed: 3, list: () => geldings.animals },
-  harem: { name: "Азаргын сүрэг", pasture: HAREM0, home: { x: PENS.horse.x, z: PENS.horse.z }, pen: PENS.horse, r: 30, hr: 15, state: "pasture", speed: 2.6, list: () => mares.animals.concat(stallion.animals) },
+  cows:  { name: "Үхэр", pasture: COWS0, home: { x: CP.x, z: CP.z }, pen: CP, r: 45, hr: 13, state: "pasture", speed: 2.4, list: () => cows.animals },
+  geld:  { name: "Морьд", pasture: GELD0, home: { x: 172, z: 74 }, r: 38, hr: 13, state: "pasture", speed: 3.8, list: () => geldings.animals },
+  harem: { name: "Азаргын сүрэг", pasture: HAREM0, home: { x: PENS.horse.x, z: PENS.horse.z }, pen: PENS.horse, r: 30, hr: 15, state: "pasture", speed: 3.4, list: () => mares.animals.concat(stallion.animals) },
 };
 const GRAZERS = [{ h: cows, grp: "cows", flee: 9 }, { h: calves, rect: CP, flee: 0, confine: CP }, { h: lambs, rect: H, flee: 0, confine: H }, { h: kids, rect: H, flee: 0, confine: H }, { h: geldings, grp: "geld", flee: 14 }, { h: mares, grp: "harem", flee: 14 }, { h: stallion, grp: "harem", flee: 5 }];
 $("total").textContent = FLOCK.length;
@@ -851,6 +854,7 @@ function drawMap() {
   mctx.fillStyle = "#2b1d14"; for (const a of horses.animals) { const [x, z] = toMap(a.x, a.z); mctx.fillRect(x - 1, z - 1, 2, 2); }
   mctx.fillStyle = "#c9a46a"; for (const a of goats.animals) { const [x, z] = toMap(a.x, a.z); mctx.fillRect(x - 1, z - 1, 2, 2); }
   mctx.fillStyle = "#fffdf5"; for (const a of sheep.animals) { const [x, z] = toMap(a.x, a.z); mctx.fillRect(x - 1, z - 1, 2, 2); }
+  mctx.fillStyle = "#e23b2e"; for (const w of wolves) if (w.state !== "off") { const [wx, wz] = toMap(w.x, w.z); mctx.beginPath(); mctx.arc(wx, wz, 3.5, 0, 7); mctx.fill(); }
   for (const b of NEWBORNS) {
     const [bx, bz] = toMap(b.x, b.z), r = 4 + Math.sin(performance.now() / 200) * 1.5;
     mctx.strokeStyle = "#ff4fa0"; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(bx, bz, r, 0, 7); mctx.stroke();
@@ -924,19 +928,25 @@ function updateSheep(dt, t) {
         const k = (1 - d / fleeR) * 7, hx = H.x - a.x, hz = H_S + 5 - a.z, hd = Math.hypot(hx, hz) || 1;
         sx += (dx / d * .35 + hx / hd) * k; sz += (dz / d * .35 + hz / hd) * k; alert = true;
       } else if (DAY.out) {   // өглөө бэлчээр лүүгээ
-        const px = SHEEP0.x - a.x, pz = SHEEP0.z - a.z, pd = Math.hypot(px, pz);
-        if (pd > 25) { sx += px / pd * 1.6; sz += pz / pd * 1.6; out = true; }
+        let tx = SHEEP0.x, tz = SHEEP0.z, near = 25;
+        if (Math.abs(a.x - OUTER.x) < OUTER.w / 2 + 3 && a.z > OUTER.z - OUTER.d / 2 - 2 && a.z < OUTER.z + OUTER.d / 2 + 6) {   // эхлээд хашааг тойрно
+          tx = OUTER.x + Math.sign(SHEEP0.x - OUTER.x || -1) * (OUTER.w / 2 + 5); tz = Math.max(a.z, H_S + 2.5); near = .5;
+        }
+        const px = tx - a.x, pz = tz - a.z, pd = Math.hypot(px, pz);
+        if (pd > near) { sx += px / pd * 3.2; sz += pz / pd * 3.2; out = true; }   // бэлчээр лүүгээ хурдан
       }
       const ex = cx - a.x, ez = cz - a.z, de = Math.hypot(ex, ez);
       const nearPen = !DAY.out && (FLOCK_DRIVEN || Math.hypot(a.x - H.x, a.z - H.z) < 55);   // орой туувал өөрсдөө гэр лүүгээ
-      if (de > spread && !nearPen) { const k = Math.min(1.4, (de - spread) * .1); sx += ex / de * k; sz += ez / de * k; }
+      if (de > spread && !nearPen && !DAY.out) { const k = Math.min(1.4, (de - spread) * .1); sx += ex / de * k; sz += ez / de * k; }
       const dg = Math.hypot(H.x - a.x, H_S + 2 - a.z);
       if (nearPen) {   // хашааны ойр: өөрсдөө хаалгаар орно (хажуу, ар талаас бол тойрч)
         const r = penRoute(a, H, true);
         if (r) { const gx2 = r[0] - a.x, gz2 = r[1] - a.z, gd2 = Math.hypot(gx2, gz2) || 1; sx += gx2 / gd2 * 2.4; sz += gz2 / gd2 * 2.4; out = true; }
       }
     } else if (DAY.out) {   // өглөө хашаанаас хаалгаар гарна
-      sx += (H.x + (a.phase % 3 - 1.5) - a.x) * .3; sz += (H_S + 4 - a.z) * .3; out = true;
+      const r = penRoute(a, H, false) || [H.x, H_S + 5];
+      const ex = r[0] + (r[1] > H_S ? (a.phase % 3 - 1.5) : 0) - a.x, ez = r[1] - a.z, ed = Math.hypot(ex, ez) || 1;
+      sx += ex / ed * 3; sz += ez / ed * 3; out = true;
     } else {
       if (!a.tx) { a.tx = H.x + (Math.random() - .5) * (H.w - 4); a.tz = H.z + (Math.random() - .5) * (H.d - 4); }
       sx += (a.tx - a.x) * .06; sz += (a.tz - a.z) * .06;
@@ -957,7 +967,7 @@ function updateSheep(dt, t) {
     }
     a.vx += sx * dt; a.vz += sz * dt;
     const damp = 1 - Math.min(1, 1.8 * dt); a.vx *= damp; a.vz *= damp;
-    const sp = Math.hypot(a.vx, a.vz), max = (follow ? 4.5 : alert ? 3.6 : out ? 1.5 : .7) * (a.goat ? 1.15 : 1);
+    const sp = Math.hypot(a.vx, a.vz), max = (follow ? 4.5 : alert ? 3.8 : out ? 2.4 : .7) * (a.goat ? 1.15 : 1);
     if (sp > max) { a.vx *= max / sp; a.vz *= max / sp; }
     const nx = a.x + a.vx * dt, nz = a.z + a.vz * dt;
     if (blocked(a.x, a.z, nx, nz, true)) { a.vx *= -.4; a.vz *= -.4; } else { a.x = nx; a.z = nz; }
@@ -1150,7 +1160,12 @@ function updateDogs(dt, t) {
   const pd = Math.hypot(P.x - CAMP.x, P.z - CAMP.z);
   for (const d of dogs) {
     let tx, tz, speed = 0;
-    if (started && pd < 90) {
+    const wolf = wolfTarget(d);
+    if (wolf) {   // чоно руу хуцаж хөөнө
+      tx = wolf.x; tz = wolf.z; d.mode = "chase";
+      speed = Math.hypot(tx - d.x, tz - d.z) < 3 ? 2 : 12;
+      if ((d.barkCd = (d.barkCd || 0) - dt) <= 0) { bark(); d.barkCd = .7 + Math.random() * .6; }
+    } else if (started && pd < 90) {
       if (d.mode === "lie") { d.mode = "follow"; d.barkT = .2 + Math.random() * .4; }
       // морины хажууд, арай ард
       const fx = Math.cos(P.heading), fz = -Math.sin(P.heading);
@@ -1177,6 +1192,122 @@ function updateDogs(dt, t) {
     d.tail.rotation.x = Math.sin(t * (speed ? 14 : 4)) * .35;
   }
 }
+
+// ---------- Шөнийн чоно ----------
+const WOLF = { waves: 0, done: true, phase: "idle", t: 0, losses: 0 };
+const wolves = [];
+{
+  const grey = std("#8b857a"), dark = std("#4f4a43"), light = std("#c9c2b4"), eye = new THREE.MeshBasicMaterial({ color: "#ffd34d" });
+  const mk = (geo, mat, sx, sy, sz, x, y, z, parent) => { const m = new THREE.Mesh(geo, mat); m.scale.set(sx, sy, sz); m.position.set(x, y, z); m.castShadow = true; parent.add(m); return m; };
+  for (let k = 0; k < 2; k++) {
+    const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
+    mk(SPH, grey, 1.15, .5, .42, 0, .72, 0, body);
+    mk(SPH, light, .7, .3, .36, .1, .6, 0, body);
+    const legs = [[.36, .13], [.36, -.13], [-.36, .13], [-.36, -.13]].map(([x, z], i) => {
+      const p = new THREE.Group(); p.position.set(x, .6, z); p.userData.ph = i === 0 || i === 3 ? 0 : Math.PI;
+      mk(CYL, grey, .1, .62, .1, 0, -.31, 0, p); body.add(p); return p;
+    });
+    const head = new THREE.Group(); head.position.set(.7, .92, 0); body.add(head);
+    mk(SPH, grey, .36, .3, .3, 0, 0, 0, head);
+    mk(CONE, grey, .2, .38, .2, .3, -.05, 0, head).rotation.z = -Math.PI / 2;      // хошуу
+    for (const sd of [1, -1]) { mk(CONE, dark, .1, .2, .06, -.04, .2, sd * .1, head); mk(SPH, eye, .06, .05, .06, .14, .06, sd * .1, head); }
+    const tail = new THREE.Group(); tail.position.set(-.58, .78, 0); tail.rotation.z = -2.2; body.add(tail);
+    mk(SPH, dark, .2, .55, .2, 0, .25, 0, tail);
+    g.visible = false; scene.add(g);
+    wolves.push({ g, body, legs, x: 0, z: 0, yaw: 0, phase: 0, state: "off", t: 0 });
+  }
+}
+function howl() {
+  if (!ac) return;
+  const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+  o.type = "sine"; o.frequency.setValueAtTime(420, t); o.frequency.linearRampToValueAtTime(680, t + .8); o.frequency.linearRampToValueAtTime(560, t + 2.2);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.08, t + .4); g.gain.exponentialRampToValueAtTime(.0001, t + 2.4);
+  o.connect(g).connect(ac.destination); o.start(t); o.stop(t + 2.5);
+}
+function gunshot() {
+  if (!ac) return;
+  const t = ac.currentTime, len = Math.floor(ac.sampleRate * .35), buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+  const src = ac.createBufferSource(), lp = ac.createBiquadFilter(), g = ac.createGain();
+  src.buffer = buf; lp.type = "lowpass"; lp.frequency.value = 2200; g.gain.value = .5;
+  src.connect(lp).connect(g).connect(ac.destination); src.start(t);
+}
+const flash = new THREE.PointLight("#ffd28a", 0, 40, 2); scene.add(flash);
+function startWolfNight() { Object.assign(WOLF, { waves: 0, done: false, phase: "wait", t: 6 + Math.random() * 4 }); }
+function wolfTarget(dog) {
+  if (WOLF.phase !== "come" && WOLF.phase !== "eat") return null;
+  let best = null, bd = 1e9;
+  for (const w of wolves) if (w.state === "come" || w.state === "eat") { const dd = Math.hypot(w.x - dog.x, w.z - dog.z); if (dd < bd) { bd = dd; best = w; } }
+  return best;
+}
+function spawnWolves() {
+  const a = -Math.PI / 2 + (Math.random() - .5) * 2.2, r = 170;   // ихэвчлэн хойд зүгийн ойноос
+  wolves.forEach((w, i) => {
+    Object.assign(w, { x: H.x + Math.cos(a) * r + i * 4, z: H.z + Math.sin(a) * r + i * 3, state: "come", t: 0 });
+    w.g.visible = true;
+  });
+  WOLF.phase = "come"; WOLF.waves++;
+  howl(); setTimeout(howl, 900);
+  toast(`🐺 Чоно ирж байна! (${WOLF.waves}-р удаа) Нохой хуцаж байна. «Буудах» товчоор үргээ!`); toastT = 5;
+}
+function scareWolves(msg) {
+  for (const w of wolves) if (w.state !== "off") { const dx = w.x - H.x, dz = w.z - H.z, d = Math.hypot(dx, dz) || 1; w.state = "flee"; w.fx = w.x + dx / d * 220; w.fz = w.z + dz / d * 220; }
+  WOLF.phase = "flee"; toast(msg); toastT = 4;
+}
+function shoot() {
+  if (!started) return;
+  gunshot(); flash.position.set(P.x, player.position.y + 2, P.z); flash.intensity = 6;
+  if (WOLF.phase === "come" || WOLF.phase === "eat") {
+    const near = wolves.some((w) => w.state !== "off" && Math.hypot(w.x - P.x, w.z - P.z) < 90);
+    if (near) scareWolves("💥 Буудлаа! Чоно үргээд зугтлаа.");
+    else { toast("Чоно хэтэрхий хол байна. Ойртоод буудаарай."); toastT = 3; }
+  }
+}
+function wolfKill() {
+  const inside = FLOCK.some((a) => a.penned) ? FLOCK.filter((a) => a.penned) : FLOCK;
+  if (!inside.length) { scareWolves("Чоно юу ч олсонгүй, буцлаа."); return; }
+  let best = inside[0], bd = 1e9;
+  for (const a of inside) { const dd = Math.hypot(a.x - wolves[0].x, a.z - wolves[0].z); if (dd < bd) { bd = dd; best = a; } }
+  best.hidden = true; FLOCK.splice(FLOCK.indexOf(best), 1); WOLF.losses++;
+  $("total").textContent = FLOCK.length;
+  scareWolves(`🐺 Чоно ${best.goat ? "1 ямаа" : "1 хонь"} бариад явчихлаа! (Алдагдал: ${WOLF.losses})`); toastT = 5;
+}
+function updateWolves(dt, t) {
+  if (WOLF.done) return;
+  flash.intensity = Math.max(0, flash.intensity - dt * 30);
+  if (WOLF.phase === "wait") { if ((WOLF.t -= dt) <= 0) spawnWolves(); return; }
+  let active = 0;
+  for (const w of wolves) {
+    if (w.state === "off") continue;
+    active++;
+    let tx = w.x, tz = w.z, sp = 0;
+    const dogNear = dogs.some((d) => Math.hypot(d.x - w.x, d.z - w.z) < 6);
+    if (w.state === "come") {
+      tx = H.x + (w === wolves[0] ? -6 : 6); tz = H.z - H.d / 2 - 3;   // хашааны ард талаас
+      sp = dogNear ? 3 : 7;
+      if (Math.hypot(tx - w.x, tz - w.z) < 2) { w.state = "eat"; w.t = 9; WOLF.phase = "eat"; toast("🐺 Чоно хашаанд ирлээ! Яаралтай буудаарай!"); toastT = 4; }
+    } else if (w.state === "eat") {
+      w.t -= dt * (dogNear ? .4 : 1);
+      if (w.t <= 0 && WOLF.phase === "eat") wolfKill();
+    } else if (w.state === "flee") {
+      tx = w.fx; tz = w.fz; sp = 11;
+      if (Math.hypot(tx - w.x, tz - w.z) < 3) { w.state = "off"; w.g.visible = false; active--; }
+    }
+    if (sp) {
+      let df = Math.atan2(-(tz - w.z), tx - w.x) - w.yaw; df = Math.atan2(Math.sin(df), Math.cos(df)); w.yaw += df * Math.min(1, dt * 5);
+      w.x += Math.cos(w.yaw) * sp * dt; w.z -= Math.sin(w.yaw) * sp * dt; w.phase += dt * sp * 3.5;
+    }
+    w.g.position.set(w.x, heightAt(w.x, w.z), w.z); w.g.rotation.y = w.yaw;
+    for (const l of w.legs) l.rotation.z = sp ? Math.sin(w.phase + l.userData.ph) * .8 : 0;
+  }
+  if (WOLF.phase === "flee" && active === 0) {
+    if (WOLF.waves < 2) { WOLF.phase = "wait"; WOLF.t = 18 + Math.random() * 12; }
+    else { WOLF.done = true; WOLF.phase = "idle"; $("sleepBtn").hidden = false; toast("Чоно дахиж ирэхгүй бололтой. Гэртээ очоод «Унтах» дарна уу."); toastT = 6; }
+  }
+  $("shootBtn").hidden = !(WOLF.phase === "come" || WOLF.phase === "eat");
+}
+$("shootBtn").onclick = () => shoot();
+addEventListener("keydown", (e) => { if (e.code === "KeyF" && !e.repeat) shoot(); });
 
 // ---------- Төллөлт: өдөр бүр нэг хонь, нэг ямаа, нэг үхэр ----------
 const BIRTH_KIND = {
@@ -1243,7 +1374,7 @@ $("tolBtn").onclick = () => tolAction();
 addEventListener("keydown", (e) => { if (e.code === "KeyE" && !e.repeat) tolAction(); });
 
 // ---------- Өдөр шөнийн мөчлөг ----------
-const DAY = { t: 450, len: 720, n: 1, phase: "day", out: false,   // эхний өдөр 16:00-оос эхэлнэ
+const DAY = { t: 0, len: 720, n: 1, phase: "morning", out: false,   // өглөө 06:00-аас, мал хашаандаа хоносон
   nightT: 0, warnT: 0, farWarned: false, births: [] };
 const PH_NAME = { morning: "Өглөө", day: "Өдөр", evening: "Орой", night: "Шөнө" };
 let PENNED = 0, FLOCK_DRIVEN = false; const FLOCK_C = { x: SHEEP0.x, z: SHEEP0.z };
@@ -1253,7 +1384,7 @@ function setPhase(p) {
   DAY.phase = p;
   if (p === "morning") { scheduleBirths(8, 16); DAY.out = true; FLOCK_DRIVEN = false; for (const g of Object.values(GROUPS)) g.state = "outing"; toast(`${DAY.n}-р өдөр. Өглөө боллоо, мал бэлчээр лүүгээ гарлаа.`); toastT = 4; }
   if (p === "evening") { toast("Орой боллоо! Бүх малаа гэртээ туугаад ир."); toastT = 5; }
-  if (p === "night") { DAY.nightT = 0; $("sleepBtn").hidden = false; toast("Бүх мал гэртээ ирлээ! Гэртээ очоод «Унтах» товчийг дарна уу."); toastT = 6; }
+  if (p === "night") { DAY.nightT = 0; DAY.out = false; startWolfNight(); toast("Бүх мал гэртээ ирлээ. Анхаар, шөнө чоно ирж магадгүй!"); toastT = 6; }
 }
 const SKY = { day: ["#4d7fc0", "#e3dcc4"], dusk: ["#3a4f86", "#f0a068"], night: ["#060b1c", "#18233c"] };
 const skyC = Object.fromEntries(Object.entries(SKY).map(([k, v]) => [k, v.map((c) => new THREE.Color(c))]));
@@ -1275,6 +1406,7 @@ function applyLight(h) {
 let hudT = 0, sleeping = false;
 function sleep() {
   if (DAY.phase !== "night" || sleeping) return;
+  if (!WOLF.done) { toast("Чоно ирж магадгүй, сэрэмжтэй бай."); return; }
   if (Math.hypot(P.x - CAMP.x, P.z - CAMP.z) > 45) { toast("Гэртээ очиж унтаарай."); return; }
   sleeping = true; $("sleepBtn").hidden = true; $("fade").classList.add("on");
   setTimeout(() => {
@@ -1291,7 +1423,7 @@ function updateDay(dt) {
     const h = hourNow();
     if (DAY.phase !== "night") while (DAY.births.length && h >= DAY.births[0].h) giveBirth(DAY.births.shift().k);
     for (const g of Object.values(GROUPS)) if (g.state === "outing") { const L = g.list(); let k = 0; for (const a of L) if (Math.hypot(a.x - g.pasture.x, a.z - g.pasture.z) < g.r) k++; if (k > L.length * .8) g.state = "pasture"; }
-    if (DAY.out && PENNED < 10 && Math.hypot(FLOCK_C.x - SHEEP0.x, FLOCK_C.z - SHEEP0.z) < 45) DAY.out = false;
+    if (DAY.out && PENNED === 0 && Math.hypot(FLOCK_C.x - SHEEP0.x, FLOCK_C.z - SHEEP0.z) < 45) DAY.out = false;   // бүгд гарсны дараа
     if (DAY.phase === "morning" && h >= 8) setPhase("day");
     if (DAY.phase === "day" && h >= 17) { DAY.out = false; setPhase("evening"); }
     if (DAY.phase === "day" && !DAY.out) {
@@ -1335,7 +1467,7 @@ function updateCamera(dt, snap) {
 function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener("resize", resize); resize();
 updatePlayer(0); updateCamera(0, true);
-$("goBtn").onclick = () => { if (!DAY.births.length) scheduleBirths(hourNow() + .15, Math.min(16.9, hourNow() + .9)); $("intro").hidden = true; started = true; initAudio(); if (ac && ac.state === "suspended") ac.resume(); };
+$("goBtn").onclick = () => { setPhase("morning"); $("intro").hidden = true; started = true; initAudio(); if (ac && ac.state === "suspended") ac.resume(); };
 $("againBtn").onclick = () => {
   $("win").hidden = true; won = false; elapsed = 0; Object.assign(P, START, { speed: 0 });
   const sp = around(SHEEP0.x, SHEEP0.z, 22);
@@ -1348,7 +1480,7 @@ function frame() {
   const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
   frameNo++;
   if (started && $("win").hidden) { elapsed += dt; updatePlayer(dt); }
-  updateDay(dt); updateBirths(); updateSheep(dt, t); updateGrazers(dt, t); updateDogs(dt, t);
+  updateDay(dt); updateBirths(); updateSheep(dt, t); updateGrazers(dt, t); updateDogs(dt, t); updateWolves(dt, t);
   if (toastT > 0 && (toastT -= dt) <= 0) $("toast").hidden = true;
   whistleT = Math.max(0, whistleT - dt);
   updateCamera(dt, false);
