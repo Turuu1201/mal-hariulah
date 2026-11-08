@@ -98,7 +98,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   <h1>Мал хариулах</h1>
   <p id="coords">49.12215° N · 104.6872° E</p>
 </div>
-<div class="mission" id="mission"><span id="clock">1-р өдөр · 16:00 · Өдөр</span> · Хонь ямаа хашаанд: <b id="penned">0</b>/<span id="total">0</span><span id="homeInfo"></span></div>
+<div class="mission" id="mission"><span id="clock">1-р өдөр · 16:00 · Өдөр</span> · Хонь ямаа хашаанд: <b id="penned">0</b>/<span id="total">0</span><span id="tolInfo"></span><span id="homeInfo"></span></div>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="fade" id="fade" aria-hidden="true"></div>
 <div class="mapbox"><canvas id="minimap" width="300" height="300" aria-label="Жижиг газрын зураг"></canvas><small>Хойд зүг ↑ · 2 км</small></div>
@@ -106,10 +106,11 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 <div class="joy" id="joy" hidden><i id="knob"></i></div>
 <div class="keys" id="keys" hidden>
   <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> эсвэл сумнууд — морь удирдах<br>
-  <kbd>Shift</kbd> — давхих · <kbd>Space</kbd> — исгэрэх · <kbd>M</kbd> — морь/мотоцикл<br>
+  <kbd>Shift</kbd> — давхих · <kbd>Space</kbd> — исгэрэх · <kbd>M</kbd> — морь/мотоцикл · <kbd>E</kbd> — төл авах<br>
   Хулганаар чирж камер эргүүлэх
 </div>
 <div class="actions">
+  <button class="act sleep" id="tolBtn" hidden>🍼 Төл авах</button>
   <button class="act fs" id="fsBtn" aria-label="Бүтэн дэлгэц">⛶</button>
   <button class="act sleep" id="sleepBtn" hidden>🌙 Унтах</button>
   <span class="speed" id="speed">0 км/ц</span>
@@ -121,17 +122,18 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 <div class="overlay" id="intro">
   <div class="card">
     <h2>Мал хариулах</h2>
-    <p>Та өвөлжөөний малчин. Өглөө мал бэлчээр лүүгээ гарна. Өдөржин хонь ямаагаа хараад, орой болоход бүх малаа гэртээ туугаад ир.</p>
+    <p>Хавар боллоо. Хонь, ямаа, үхэр төллөж байна. Өдөр бүр нэг хонь, нэг ямаа, нэг үнээ төллөнө: очиж төлийг нь авчраад хашаандаа хий. Орой бүх малаа гэртээ туугаад ир.</p>
     <ul>
       <li>Хонь ямаа өдөр бэлчсээр аажмаар хойд зүг рүү явна. Хэт холдвол сануулга гарна.</li>
       <li>Малд ойртоход тэд гэр лүүгээ зүглээд явна. <b>Исгэрэх</b> товч холын малыг хөдөлгөнө.</li>
       <li>Орой 17:00-оос малаа туугаад ир: хонь ямаа хашааны баруун хэсэгт, үхэр тугалтай зүүн хэсэгт, азаргын сүрэг адууны хашаанд орно. Морьдын сүрэг адууны хашааны гадна хононо. Сүрэг бүрт ойртоход (хонь ямаа ч мөн) бүхэлдээ гэр лүүгээ явж, өөрсдөө хаалгаар орно.</li>
-      <li>Хурга, ишиг, унага эхээсээ салахгүй дагаж явна.</li>
+      <li>🍼 Мал төллөхөд мэдэгдэл гарч, газрын зураг дээр ягаан цагираг анивчина. Очоод <b>Төл авах</b> (E) дарж эмээлийн бүүрэгтээ авна. Эх нь дагаж ирнэ. Хашааны дэргэд <b>Хашаанд хийх</b> дарна.</li>
+      <li>Хурга, ишиг, тугал хашаандаа байна. Унага эхээ дагаж явна.</li>
       <li>Гэрийн дэргэд <b>Мотоцикл</b> товч (M) дарж морь, мотоцикл хоёрыг сольж унана. Мотоцикл 70 км/ц хүртэл хурдална.</li>
       <li>Өдөр азаргын сүрэгт ойртвол азарга дайрна!</li>
       <li>Бүх малаа хашаалсны дараа гэртээ очоод <b>Унтах</b> товч (U) дарахад өглөө болж, мал бэлчээр лүүгээ гарна.</li>
     </ul>
-    <p class="data" id="dataNote">Газрын гадарга: SRTM 30 метрийн бодит өндөр (2×2 км), алсын уулс 6 км хүртэл. Тариалан, горхи, шороон зам, хөрш айлын өвөлжөө, чулуун овоо, ганц модыг хиймэл дагуулын зургаас (Esri World Imagery) тойм зурж оруулсан. Ой модыг таны тэмдэглэсэн хэсгүүдэд хиймэл дагуулын зураг дээрх модны байрлалаар тарьсан. Их зам: OpenStreetMap. Өвөлжөө: 2 гэр, 2 банхар нохой; 300 хонь, 200 ямаа (30% нь хурга, ишиг); 49 үхэр, хашааны тусгай хэсэгт 21 тугал; тусдаа бэлчих 10 морь; 1 хээр азарга, 17 гүү, 7 унагатай азаргын сүрэг.</p>
+    <p class="data" id="dataNote">Газрын гадарга: SRTM 30 метрийн бодит өндөр (2×2 км), алсын уулс 6 км хүртэл. Тариалан, горхи, шороон зам, хөрш айлын өвөлжөө, чулуун овоо, ганц модыг хиймэл дагуулын зургаас (Esri World Imagery) тойм зурж оруулсан. Ой модыг таны тэмдэглэсэн хэсгүүдэд хиймэл дагуулын зураг дээрх модны байрлалаар тарьсан. Их зам: OpenStreetMap. Хавар. Өвөлжөө: 2 гэр, 2 банхар нохой; 300 хонь, 200 ямаа, хашаанд 97 хурга ишиг; 49 үхэр, 5 тугал; тусдаа бэлчих 10 морь; 1 хээр азарга, 17 гүү, 7 унагатай азаргын сүрэг.</p>
     <p class="rotate" id="rotateHint" hidden>📱 Утсаа хэвтээ эргүүлбэл илүү тохиромжтой. ⛶ товчоор бүтэн дэлгэцээр тогло.</p>
     <button class="go" id="goBtn">Мордох</button>
   </div>
@@ -224,6 +226,7 @@ const vnoise = (x, z) => {
 const C = {
   lush: new THREE.Color("#6f8f3e"), dry: new THREE.Color("#a6a058"), steep: new THREE.Color("#b49f72"), north: new THREE.Color("#5a7c38"),
   wheat: new THREE.Color("#cdb47e"), wheatD: new THREE.Color("#a98f5c"), crop: new THREE.Color("#3f5f2a"), cropD: new THREE.Color("#2f4a20"),
+  spr: new THREE.Color("#b9a66a"), spr2: new THREE.Color("#a38d58"), sprG: new THREE.Color("#76a043"),
   buuts: new THREE.Color("#4e4030"), wet: new THREE.Color("#4d7a33"), forest: new THREE.Color("#4a6a30"), far: new THREE.Color("#7f8a5a"),
 };
 // ойн нүдний хурдан хайлт (10 м)
@@ -234,7 +237,9 @@ function groundColor(x, z, c, near) {
   const slope = Math.min(1, Math.hypot(dx, dz) / (2 * e) * 2.4);
   const northFacing = Math.max(0, dz / (2 * e)) * 4;
   const n = vnoise(x * .02, z * .02) * .6 + vnoise(x * .11, z * .11) * .4;
-  c.copy(C.lush).lerp(C.dry, n * .8).lerp(C.north, Math.min(.6, northFacing)).lerp(C.steep, Math.max(0, slope - .25) * .9);
+  // хавар: дов толгод хуурай шар, жалга хөндий ногоорсон
+  const valley = Math.max(0, Math.min(1, ((heightAt(x + 35, z) + heightAt(x - 35, z) + heightAt(x, z + 35) + heightAt(x, z - 35)) / 4 - heightAt(x, z)) / 2.5));
+  c.copy(C.spr).lerp(C.spr2, n * .9).lerp(C.steep, Math.max(0, slope - .25) * .9).lerp(C.sprG, valley * .9);
   const f = fieldAt(x, z);
   if (f) {
     const stripe = (Math.sin(x / 1.6) * .5 + .5) * .7 + n * .3;
@@ -305,7 +310,7 @@ for (const cr of F.creeks) {
     const h = 7 + hash(i * 3.1) * 7, y = heightAt(x, z);
     m.compose(v.set(x, y + h * .2, z), q.setFromAxisAngle(up, hash(i) * 6), s.set(1, h * .4, 1)); trunk.setMatrixAt(i, m);
     m.compose(v.set(x, y + h * .58, z), q, s.set(h * .17, h * .78, h * .17)); crown.setMatrixAt(i, m);
-    crown.setColorAt(i, col.setHSL(.27 + hash(i * 7) * .06, .38, .17 + hash(i * 5) * .08).convertSRGBToLinear());
+    crown.setColorAt(i, col.setHSL(.24 + hash(i * 7) * .05, .42, .24 + hash(i * 5) * .08).convertSRGBToLinear());   // хаврын шинэс
   });
   trunk.castShadow = crown.castShadow = true; crown.receiveShadow = true;
   scene.add(trunk, crown);
@@ -322,7 +327,8 @@ for (const cr of F.creeks) {
     if (fieldAt(x, z)) continue;
     const k = .6 + Math.random() * 1.2;
     m.compose(v.set(x, heightAt(x, z) + .1, z), q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.random() * 6), s.set(k, k * (.6 + Math.random() * .8), k));
-    im.setMatrixAt(i, m); im.setColorAt(i, col.setHSL(.2 + Math.random() * .06, .35 + Math.random() * .2, .3 + Math.random() * .12).convertSRGBToLinear());
+    const vl = ((heightAt(x + 30, z) + heightAt(x - 30, z) + heightAt(x, z + 30) + heightAt(x, z - 30)) / 4 - heightAt(x, z)) / 2.5;
+    im.setMatrixAt(i, m); im.setColorAt(i, (vl > .35 ? col.setHSL(.22 + Math.random() * .05, .45, .3 + Math.random() * .1) : col.setHSL(.11 + Math.random() * .04, .35 + Math.random() * .15, .4 + Math.random() * .1)).convertSRGBToLinear());
     i++;
   }
   scene.add(im);
@@ -572,9 +578,12 @@ function poseHerd(h, t) {
   const { rig, parts, animals, S } = h, d = rig.d, cx = camera.position.x, cz = camera.position.z;
   for (let i = 0; i < animals.length; i++) {
     const a = animals[i];
-    if ((a.x - cx) ** 2 + (a.z - cz) ** 2 > 260 * 260 && (i + frameNo) % 6) continue;
-    rig.root.position.set(a.x, heightAt(a.x, a.z), a.z); rig.root.rotation.set(0, a.yaw, 0); rig.root.scale.setScalar(a.scale);
+    if (a.hidden) { if (!a.zeroed) { for (const p of parts) for (let k = 0; k < p.nodes.length; k++) p.im.setMatrixAt(i * p.nodes.length + k, ZERO); a.zeroed = true; } continue; }
+    a.zeroed = false;
+    if (!a.cy && (a.x - cx) ** 2 + (a.z - cz) ** 2 > 260 * 260 && (i + frameNo) % 6) continue;
+    rig.root.position.set(a.x, a.cy || heightAt(a.x, a.z), a.z); rig.root.rotation.set(0, a.yaw, 0); rig.root.scale.setScalar(a.scale);
     if (a.rear > .01) { rig.root.rotateZ(a.rear); rig.root.position.y += a.rear * .5; }
+    if (a.lie) rig.root.position.y -= S.leg * a.scale * .75;   // шинэ төрсөн нярай хэвтэнэ
     const sw = a.speed > .08 ? Math.min(.7, .3 + a.speed * .08) : 0;
     for (const p of d.legPiv) p.rotation.z = sw ? Math.sin(a.phase + p.userData.ph) * sw : 0;
     d.neckPiv.rotation.z = a.neck;
@@ -587,14 +596,19 @@ function poseHerd(h, t) {
 const around = (cx, cz, r) => () => { const a = Math.random() * 6.28, d = Math.sqrt(Math.random()) * r; return { x: cx + Math.cos(a) * d, z: cz + Math.sin(a) * d }; };
 const SHEEP0 = { x: -90, z: -200 };
 const WIN_N = 490;
-const sheep = makeHerd("sheep", 300, around(SHEEP0.x, SHEEP0.z, 20));
-const goats = makeHerd("goat", 200, around(SHEEP0.x + 6, SHEEP0.z - 4, 18), .3, .55);
+const sheep = makeHerd("sheep", 300, around(SHEEP0.x, SHEEP0.z, 20), 0);
+const goats = makeHerd("goat", 200, around(SHEEP0.x + 6, SHEEP0.z - 4, 18), 0);
 goats.animals.forEach((a) => (a.goat = true));
 const FLOCK = sheep.animals.concat(goats.animals);
 const COWS0 = { x: 145, z: 560 }, GELD0 = { x: 609, z: 229 }, HAREM0 = { x: 680, z: 294 };
 const cows = makeHerd("cow", 49, around(COWS0.x, COWS0.z, 35), 0);
 const inRect = (r, m) => () => ({ x: r.x + (Math.random() - .5) * (r.w - m * 2), z: r.z + (Math.random() - .5) * (r.d - m * 2) });
-const calves = makeHerd("cow", 21, inRect(CP, 1.2), 1, .55);
+// хашаандаа байгаа төл (шинэ төлд нөөц байр)
+const TOL0 = { lamb: 58, kid: 39, calf: 5 }, TOL_SPARE = 30;
+const calves = makeHerd("cow", TOL0.calf + TOL_SPARE, inRect(CP, 1.2), 1, .55);
+const lambs = makeHerd("sheep", TOL0.lamb + TOL_SPARE, inRect(H, 1.5), 1, .5);
+const kids = makeHerd("goat", TOL0.kid + TOL_SPARE, inRect(H, 1.5), 1, .5);
+for (const [h, n] of [[calves, TOL0.calf], [lambs, TOL0.lamb], [kids, TOL0.kid]]) h.animals.slice(n).forEach((a) => (a.hidden = true));
 const geldings = makeHerd("horse", 10, around(GELD0.x, GELD0.z, 22), 0);                  // насанд хүрсэн морьд
 const mares = makeHerd("horse", 24, around(HAREM0.x, HAREM0.z, 22), 7 / 24, .58);           // 17 гүү, 7 унага
 const stallion = makeHerd("horse", 1, around(HAREM0.x, HAREM0.z, 6), 0, 1, { stallion: true, pal: "stallion", scale: 1.1 });
@@ -604,7 +618,7 @@ const GROUPS = {
   geld:  { name: "Морьд", pasture: GELD0, home: { x: 172, z: 74 }, r: 38, hr: 13, state: "pasture", speed: 3, list: () => geldings.animals },
   harem: { name: "Азаргын сүрэг", pasture: HAREM0, home: { x: PENS.horse.x, z: PENS.horse.z }, pen: PENS.horse, r: 30, hr: 15, state: "pasture", speed: 2.6, list: () => mares.animals.concat(stallion.animals) },
 };
-const GRAZERS = [{ h: cows, grp: "cows", flee: 9 }, { h: calves, rect: CP, flee: 0, calf: true }, { h: geldings, grp: "geld", flee: 14 }, { h: mares, grp: "harem", flee: 14 }, { h: stallion, grp: "harem", flee: 5 }];
+const GRAZERS = [{ h: cows, grp: "cows", flee: 9 }, { h: calves, rect: CP, flee: 0, confine: CP }, { h: lambs, rect: H, flee: 0, confine: H }, { h: kids, rect: H, flee: 0, confine: H }, { h: geldings, grp: "geld", flee: 14 }, { h: mares, grp: "harem", flee: 14 }, { h: stallion, grp: "harem", flee: 5 }];
 $("total").textContent = FLOCK.length;
 
 // ---------- Малчин морьтой ----------
@@ -664,8 +678,8 @@ let VEH = "horse";
 const P = { ...START, speed: 0, phase: 0 };
 
 // ---------- Мөргөлдөөн ----------
-function blocked(ox, oz, nx, nz, animal, calf) {
-  if (calf && inPenP(CP, ox, oz, .3) && !inPenP(CP, nx, nz, .3)) return true;
+function blocked(ox, oz, nx, nz, animal, confine) {
+  if (confine && inPenP(confine, ox, oz, .3) && !inPenP(confine, nx, nz, .3)) return true;   // төл хашаанаасаа гарахгүй
   for (const g of gers) if (Math.hypot(nx - g.x, nz - g.z) < GR + (animal ? .6 : 1.3)) return true;
   for (const p of Object.values(PENS)) if (inPenP(p, ox, oz, -.3) !== inPenP(p, nx, nz, -.3)) {
     if (!(Math.abs(nx - p.x) < p.gate / 2 - .3 && Math.abs(nz - p.S) < 1.3)) return true;
@@ -793,7 +807,8 @@ const mapBg = document.createElement("canvas"); mapBg.width = mapBg.height = MM;
     const x = -HALF + (i + .5) / MM * 2 * HALF, z = -HALF + (j + .5) / MM * 2 * HALF, h = heightAt(x, z);
     const sh = (heightAt(x - 6, z - 6) - h) * .06, contour = Math.abs(((h + 1000) % 10) - 5) < .5 ? -.08 : 0;
     const f = fieldAt(x, z);
-    c.set(f ? (f.crop === "green" ? "#3f5f2a" : "#cdb47e") : "#7d9a4c");
+    c.set(f ? (f.crop === "green" ? "#3f5f2a" : "#cdb47e") : "#b3a066");
+    if (!f) c.lerp(new THREE.Color("#76a043"), Math.max(0, Math.min(1, ((heightAt(x + 35, z) + heightAt(x - 35, z) + heightAt(x, z + 35) + heightAt(x, z - 35)) / 4 - h) / 2.5)) * .9);
     const k = (i + j * MM) * 4;
     img.data[k] = Math.max(0, Math.min(255, (c.r + sh + contour) * 255)); img.data[k + 1] = Math.max(0, Math.min(255, (c.g + sh + contour) * 255)); img.data[k + 2] = Math.max(0, Math.min(255, (c.b + sh + contour) * 255)); img.data[k + 3] = 255;
   }
@@ -820,6 +835,10 @@ function drawMap() {
   mctx.fillStyle = "#2b1d14"; for (const a of horses.animals) { const [x, z] = toMap(a.x, a.z); mctx.fillRect(x - 1, z - 1, 2, 2); }
   mctx.fillStyle = "#c9a46a"; for (const a of goats.animals) { const [x, z] = toMap(a.x, a.z); mctx.fillRect(x - 1, z - 1, 2, 2); }
   mctx.fillStyle = "#fffdf5"; for (const a of sheep.animals) { const [x, z] = toMap(a.x, a.z); mctx.fillRect(x - 1, z - 1, 2, 2); }
+  for (const b of NEWBORNS) {
+    const [bx, bz] = toMap(b.x, b.z), r = 4 + Math.sin(performance.now() / 200) * 1.5;
+    mctx.strokeStyle = "#ff4fa0"; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(bx, bz, r, 0, 7); mctx.stroke();
+  }
   const [px, pz] = toMap(P.x, P.z);
   mctx.save(); mctx.translate(px, pz); mctx.rotate(-P.heading);
   mctx.fillStyle = "#e6b04a"; mctx.strokeStyle = "#1d1405"; mctx.lineWidth = 1.5;
@@ -864,16 +883,25 @@ function updateSheep(dt, t) {
   cells.clear();
   for (const a of FLOCK) { const k = key(a.x, a.z); let arr = cells.get(k); if (!arr) cells.set(k, (arr = [])); arr.push(a); }
   let cx = 0, cz = 0, n = 0, penned = 0;
-  for (const a of FLOCK) { a.penned = inPen(a.x, a.z, .6); if (a.penned) penned++; else { cx += a.x; cz += a.z; n++; } }
+  for (const a of FLOCK) { a.penned = inPen(a.x, a.z, -.3); if (a.penned) penned++; else { cx += a.x; cz += a.z; n++; } }
   if (n) { cx /= n; cz /= n; }
   const fleeR = whistleT > 0 ? 48 : VEH === "moto" ? 24 : 18, spread = Math.max(6, Math.sqrt(n) * .9);
   for (const a of FLOCK) {
     let sx = 0, sz = 0, alert = false, out = false, follow = false;
     if (a.young && a.mother) {   // хурга, ишиг эхээсээ салахгүй
       const m = a.mother, c = Math.cos(m.yaw), s2 = Math.sin(m.yaw);
-      const tx = m.x - c * 1.1 + s2 * a.offS, tz = m.z + s2 * 1.1 + c * a.offS, fx = tx - a.x, fz = tz - a.z;
-      if (Math.hypot(fx, fz) > 12) { a.x = tx; a.z = tz; a.vx = a.vz = 0; }
-      sx += fx * 2.5; sz += fz * 2.5; follow = true;
+      const mIn = inPen(m.x, m.z, -.3), yIn = inPen(a.x, a.z, -.3);
+      let tx = m.x - c * 1.1 + s2 * a.offS, tz = m.z + s2 * 1.1 + c * a.offS;
+      if (mIn && !yIn) { const r = penRoute(a, H, true); if (r) { tx = r[0]; tz = r[1]; } }   // эх нь хашаанд: хаалгаар орно
+      else if (!mIn && yIn) { tx = H.x; tz = H_S + 4; }                                       // эх нь гадаа: хаалгаар гарна
+      const fx = tx - a.x, fz = tz - a.z, fd = Math.hypot(fx, fz);
+      if (fd > 12 && mIn === yIn) { a.x = tx; a.z = tz; a.vx = a.vz = 0; }
+      if (mIn !== yIn) { sx += fx / (fd || 1) * 3; sz += fz / (fd || 1) * 3; } else { sx += fx * 2.5; sz += fz * 2.5; }
+      follow = true;
+    } else if (a.baby && (a.stay || a.followP)) {   // нярайныхаа дэргэд / төлөө авсан малчныг дагана
+      const tx = a.stay ? a.baby.x : P.x, tz = a.stay ? a.baby.z : P.z, fd = Math.hypot(tx - a.x, tz - a.z), keep = a.stay ? 1.2 : 5;
+      if (fd > keep) { sx += (tx - a.x) / fd * 3; sz += (tz - a.z) / fd * 3; }
+      follow = true;
     } else if (!a.penned) {
       const dx = a.x - P.x, dz = a.z - P.z, d = Math.hypot(dx, dz);
       if (d < fleeR) {   // туухад: голдуу гэр (хашааны хаалга) зүг рүү, бага зэрэг таниас холдоно
@@ -929,6 +957,19 @@ function updateSheep(dt, t) {
 function updateGrazers(dt, t) {
   for (const G of GRAZERS) for (const a of G.h.animals) {
     if (a === ST && updateStallion(dt, t)) continue;
+    if (a.hidden || a.state === "newborn" || a.state === "carried") continue;
+    if (a.baby && (a.stay || a.followP)) {   // үнээ тугалынхаа дэргэд / малчныг дагана
+      const tx = a.stay ? a.baby.x : P.x, tz = a.stay ? a.baby.z : P.z, fx = tx - a.x, fz = tz - a.z, fd = Math.hypot(fx, fz), keep = a.stay ? 1.8 : 6;
+      let sp = 0;
+      if (fd > keep) {
+        sp = Math.min(4, fd); let df = Math.atan2(-fz, fx) - a.yaw; df = Math.atan2(Math.sin(df), Math.cos(df)); a.yaw += df * Math.min(1, dt * 4);
+        const nx = a.x + Math.cos(a.yaw) * sp * dt, nz = a.z - Math.sin(a.yaw) * sp * dt;
+        if (!blocked(a.x, a.z, nx, nz, true)) { a.x = nx; a.z = nz; } else if (!blocked(a.x, a.z, nx, a.z, true)) a.x = nx; else if (!blocked(a.x, a.z, a.x, nz, true)) a.z = nz;
+      }
+      a.speed = sp; a.phase += dt * sp * 6.5;
+      a.neck += ((sp < .2 ? GRAZE : -G.h.S.neckAng) - a.neck) * Math.min(1, dt * 2.5);
+      continue;
+    }
     if (a.young && a.mother) {   // унага эхээсээ салахгүй
       const m = a.mother, c = Math.cos(m.yaw), s2 = Math.sin(m.yaw);
       const tx = m.x - c * 1.6 + s2 * a.offS * 1.4, tz = m.z + s2 * 1.6 + c * a.offS * 1.4, fx = tx - a.x, fz = tz - a.z, fd = Math.hypot(fx, fz);
@@ -964,9 +1005,9 @@ function updateGrazers(dt, t) {
         let df = Math.atan2(-tz, tx) - a.yaw; df = Math.atan2(Math.sin(df), Math.cos(df)); a.yaw += df * Math.min(1, dt * 2.5);
         if (Math.abs(df) < .8) {
           const nx = a.x + Math.cos(a.yaw) * speed * dt, nz = a.z - Math.sin(a.yaw) * speed * dt;
-          if (!blocked(a.x, a.z, nx, nz, true, G.calf) && !fieldAt(nx, nz)) { a.x = nx; a.z = nz; }
-          else if (!blocked(a.x, a.z, nx, a.z, true, G.calf) && !fieldAt(nx, a.z)) a.x = nx;      // хананы дагуу гулсана
-          else if (!blocked(a.x, a.z, a.x, nz, true, G.calf) && !fieldAt(a.x, nz)) a.z = nz;
+          if (!blocked(a.x, a.z, nx, nz, true, G.confine) && !fieldAt(nx, nz)) { a.x = nx; a.z = nz; }
+          else if (!blocked(a.x, a.z, nx, a.z, true, G.confine) && !fieldAt(nx, a.z)) a.x = nx;      // хананы дагуу гулсана
+          else if (!blocked(a.x, a.z, a.x, nz, true, G.confine) && !fieldAt(a.x, nz)) a.z = nz;
           else { a.state = "graze"; a.timer = .4; }
         }
         moving = true;
@@ -1121,16 +1162,80 @@ function updateDogs(dt, t) {
   }
 }
 
+// ---------- Төллөлт: өдөр бүр нэг хонь, нэг ямаа, нэг үхэр ----------
+const BIRTH_KIND = {
+  sheep: { herd: () => lambs, moms: () => sheep.animals, pen: () => H, verb: "Хонь хурагалжээ", young: "Хурга", acc: "Хургыг" },
+  goat:  { herd: () => kids, moms: () => goats.animals, pen: () => H, verb: "Ямаа ишиглэжээ", young: "Ишиг", acc: "Ишгийг" },
+  cow:   { herd: () => calves, moms: () => cows.animals, pen: () => CP, verb: "Үнээ тугаллажээ", young: "Тугал", acc: "Тугалыг" },
+};
+const NEWBORNS = []; let carrying = null, tolNear = null, tolAtPen = false;
+const tolCount = () => [lambs, kids].reduce((s, h) => s + h.animals.filter((a) => !a.hidden && a.state !== "newborn" && a.state !== "carried").length, 0);
+const calfCount = () => calves.animals.filter((a) => !a.hidden && a.state !== "newborn" && a.state !== "carried").length;
+function scheduleBirths(from, to) { DAY.births = Object.keys(BIRTH_KIND).map((k) => ({ k, h: from + Math.random() * (to - from) })).sort((a, b) => a.h - b.h); }
+function bleat() {
+  if (!ac) return;
+  const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain();
+  o.type = "sawtooth"; o.frequency.setValueAtTime(520, t); o.frequency.linearRampToValueAtTime(440, t + .5);
+  l.frequency.value = 9; lg.gain.value = 40; l.connect(lg).connect(o.frequency);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.07, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + .6);
+  o.connect(g).connect(ac.destination); o.start(t); l.start(t); o.stop(t + .6); l.stop(t + .6);
+}
+function giveBirth(k) {
+  const B = BIRTH_KIND[k], baby = B.herd().animals.find((a) => a.hidden);
+  const moms = B.moms().filter((m) => !m.baby && !inPenP(PENS.sheep, m.x, m.z, -.3) && !inPenP(CP, m.x, m.z, -.3));
+  if (!baby || !moms.length) return;
+  const m = moms[Math.floor(Math.random() * moms.length)];
+  Object.assign(baby, { hidden: false, state: "newborn", kind: k, mom: m, lie: true, speed: 0, neck: -.3, cy: 0,
+    x: m.x - Math.cos(m.yaw) * 1.5, z: m.z + Math.sin(m.yaw) * 1.5, yaw: m.yaw + 1.3 });
+  m.baby = baby; m.stay = true; m.followP = false;
+  NEWBORNS.push(baby);
+  toast(`🍼 ${B.verb}! ${B.acc} нь авч хашаандаа хийгээрэй.`); toastT = 6; bleat();
+}
+function tolAction() {
+  if (!started) return;
+  if (tolNear && !carrying) {
+    carrying = tolNear; tolNear = null;
+    Object.assign(carrying, { state: "carried", lie: false });
+    carrying.mom.stay = false; carrying.mom.followP = true;
+    bleat(); toast(`${BIRTH_KIND[carrying.kind].young} авлаа. Хашаандаа аваачаарай, эх нь араас дагана.`); toastT = 4;
+  } else if (carrying && tolAtPen) {
+    const B = BIRTH_KIND[carrying.kind], p = inRect(B.pen(), 1.5)();
+    Object.assign(carrying, { state: "graze", timer: 2, x: p.x, z: p.z, cy: 0, lie: false });
+    carrying.mom.followP = false; carrying.mom.baby = null;
+    NEWBORNS.splice(NEWBORNS.indexOf(carrying), 1);
+    toast(`${B.young} хашаанд орлоо. Төл: ${tolCount()} хурга ишиг, ${calfCount()} тугал`); toastT = 4;
+    carrying = null;
+  }
+}
+function updateBirths() {
+  tolNear = null;
+  if (!carrying) for (const b of NEWBORNS) if (b.state === "newborn" && Math.hypot(b.x - P.x, b.z - P.z) < 4.5) { tolNear = b; break; }
+  tolAtPen = false;
+  if (carrying) {
+    const pen = BIRTH_KIND[carrying.kind].pen();
+    tolAtPen = Math.abs(P.x - pen.x) < pen.w / 2 + 8 && Math.abs(P.z - pen.z) < pen.d / 2 + 8;
+    const fx = Math.cos(P.heading), fz = -Math.sin(P.heading);
+    carrying.x = P.x + fx * .5; carrying.z = P.z + fz * .5; carrying.yaw = P.heading + Math.PI / 2;
+    carrying.cy = player.position.y + (VEH === "moto" ? .9 : 1.2); carrying.neck = -.4;
+  }
+  const btn = $("tolBtn"), show = !!(tolNear || (carrying && tolAtPen));
+  if (btn.hidden === show) btn.hidden = !show;
+  const label = tolNear ? `🍼 ${BIRTH_KIND[tolNear.kind].young} авах` : "Хашаанд хийх";
+  if (show && btn.textContent !== label) btn.textContent = label;
+}
+$("tolBtn").onclick = () => tolAction();
+addEventListener("keydown", (e) => { if (e.code === "KeyE" && !e.repeat) tolAction(); });
+
 // ---------- Өдөр шөнийн мөчлөг ----------
 const DAY = { t: 450, len: 720, n: 1, phase: "day", out: false,   // эхний өдөр 16:00-оос эхэлнэ
-  nightT: 0, warnT: 0, farWarned: false };
+  nightT: 0, warnT: 0, farWarned: false, births: [] };
 const PH_NAME = { morning: "Өглөө", day: "Өдөр", evening: "Орой", night: "Шөнө" };
 let PENNED = 0, FLOCK_DRIVEN = false; const FLOCK_C = { x: SHEEP0.x, z: SHEEP0.z };
 const hourNow = () => DAY.phase === "night" ? 22 : Math.min(22, 6 + DAY.t / DAY.len * 16);
 function groupHome(g) { let k = 0; for (const a of g.list()) if (g.pen ? inPenP(g.pen, a.x, a.z, 0) : Math.hypot(a.x - g.home.x, a.z - g.home.z) < g.hr + 12) k++; return k; }
 function setPhase(p) {
   DAY.phase = p;
-  if (p === "morning") { DAY.out = true; FLOCK_DRIVEN = false; for (const g of Object.values(GROUPS)) g.state = "outing"; toast(`${DAY.n}-р өдөр. Өглөө боллоо, мал бэлчээр лүүгээ гарлаа.`); toastT = 4; }
+  if (p === "morning") { scheduleBirths(8, 16); DAY.out = true; FLOCK_DRIVEN = false; for (const g of Object.values(GROUPS)) g.state = "outing"; toast(`${DAY.n}-р өдөр. Өглөө боллоо, мал бэлчээр лүүгээ гарлаа.`); toastT = 4; }
   if (p === "evening") { toast("Орой боллоо! Бүх малаа гэртээ туугаад ир."); toastT = 5; }
   if (p === "night") { DAY.nightT = 0; $("sleepBtn").hidden = false; toast("Бүх мал гэртээ ирлээ! Гэртээ очоод «Унтах» товчийг дарна уу."); toastT = 6; }
 }
@@ -1168,6 +1273,7 @@ function updateDay(dt) {
     if (DAY.phase === "night") DAY.nightT += dt;
     else DAY.t = Math.min(DAY.t + dt, DAY.len);
     const h = hourNow();
+    if (DAY.phase !== "night") while (DAY.births.length && h >= DAY.births[0].h) giveBirth(DAY.births.shift().k);
     for (const g of Object.values(GROUPS)) if (g.state === "outing") { const L = g.list(); let k = 0; for (const a of L) if (Math.hypot(a.x - g.pasture.x, a.z - g.pasture.z) < g.r) k++; if (k > L.length * .8) g.state = "pasture"; }
     if (DAY.out && PENNED < 10 && Math.hypot(FLOCK_C.x - SHEEP0.x, FLOCK_C.z - SHEEP0.z) < 45) DAY.out = false;
     if (DAY.phase === "morning" && h >= 8) setPhase("day");
@@ -1192,6 +1298,7 @@ function updateDay(dt) {
     const hh = Math.floor(h), mm = Math.floor((h - hh) * 6) * 10;
     $("clock").textContent = `${DAY.n}-р өдөр · ${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")} · ${PH_NAME[DAY.phase]}`;
     const nh = geldings.animals.length + mares.animals.length + 1;
+    $("tolInfo").textContent = ` · Төл ${tolCount()} + ${calfCount()} тугал`;
     $("homeInfo").textContent = DAY.phase === "evening" || DAY.phase === "night" ? ` · Үхэр ${groupHome(GROUPS.cows)}/${cows.animals.length} · Адуу ${groupHome(GROUPS.geld) + groupHome(GROUPS.harem)}/${nh}` : "";
   }
 }
@@ -1212,7 +1319,7 @@ function updateCamera(dt, snap) {
 function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener("resize", resize); resize();
 updatePlayer(0); updateCamera(0, true);
-$("goBtn").onclick = () => { $("intro").hidden = true; started = true; initAudio(); if (ac && ac.state === "suspended") ac.resume(); };
+$("goBtn").onclick = () => { if (!DAY.births.length) scheduleBirths(hourNow() + .15, Math.min(16.9, hourNow() + .9)); $("intro").hidden = true; started = true; initAudio(); if (ac && ac.state === "suspended") ac.resume(); };
 $("againBtn").onclick = () => {
   $("win").hidden = true; won = false; elapsed = 0; Object.assign(P, START, { speed: 0 });
   const sp = around(SHEEP0.x, SHEEP0.z, 22);
@@ -1225,11 +1332,11 @@ function frame() {
   const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
   frameNo++;
   if (started && $("win").hidden) { elapsed += dt; updatePlayer(dt); }
-  updateDay(dt); updateSheep(dt, t); updateGrazers(dt, t); updateDogs(dt, t);
+  updateDay(dt); updateBirths(); updateSheep(dt, t); updateGrazers(dt, t); updateDogs(dt, t);
   if (toastT > 0 && (toastT -= dt) <= 0) $("toast").hidden = true;
   whistleT = Math.max(0, whistleT - dt);
   updateCamera(dt, false);
-  poseHerd(sheep, t); poseHerd(goats, t); poseHerd(cows, t); poseHerd(calves, t); poseHerd(geldings, t); poseHerd(mares, t); poseHerd(stallion, t);
+  poseHerd(sheep, t); poseHerd(goats, t); poseHerd(lambs, t); poseHerd(kids, t); poseHerd(cows, t); poseHerd(calves, t); poseHerd(geldings, t); poseHerd(mares, t); poseHerd(stallion, t);
   for (const s of smoke) {
     s.userData.t += dt; const p = (s.userData.t % 5) / 5, ch = s.userData.ch;
     s.position.set(ch.x + p * 3, ch.y + p * 6, ch.z + p * 1.2); s.scale.setScalar(.4 + p * 2.2); s.material.opacity = .4 * Math.sin(p * Math.PI);
