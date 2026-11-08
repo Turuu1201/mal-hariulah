@@ -947,11 +947,11 @@ function updateSheep(dt, t) {
     if (!alert && !follow) {
       if ((a.wt -= dt) <= 0) { const ang = Math.random() * 6.28, m = Math.random() < .45 ? .5 : 0; a.wx = Math.cos(ang) * m; a.wz = Math.sin(ang) * m; a.wt = 2 + Math.random() * 5; }
       sx += a.wx; sz += a.wz;
-      if (DAY.phase === "day" && !a.penned && !DAY.out) sz -= .35;   // өдөр аажмаар хойшоо бэлчинэ
+      if (DAY.phase === "day" && !a.penned && !DAY.out) sz -= 2.5;   // өдөр хойд зүг рүү нүүнэ   // өдөр аажмаар хойшоо бэлчинэ
     }
     a.vx += sx * dt; a.vz += sz * dt;
     const damp = 1 - Math.min(1, 1.8 * dt); a.vx *= damp; a.vz *= damp;
-    const sp = Math.hypot(a.vx, a.vz), max = (follow ? 4.5 : alert ? 3.8 : out ? 2.4 : .7) * (a.goat ? 1.15 : 1);
+    const sp = Math.hypot(a.vx, a.vz), max = (follow ? 4.5 : alert ? 3.8 : out ? 2.4 : DAY.phase === "day" && !a.penned ? 1.5 : .7) * (a.goat ? 1.15 : 1);
     if (sp > max) { a.vx *= max / sp; a.vz *= max / sp; }
     const nx = a.x + a.vx * dt, nz = a.z + a.vz * dt;
     if (blocked(a.x, a.z, nx, nz, true)) { a.vx *= -.4; a.vz *= -.4; } else { a.x = nx; a.z = nz; }
@@ -1412,7 +1412,7 @@ function updateDay(dt) {
     if (DAY.phase === "day" && h >= 17) { DAY.out = false; setPhase("evening"); }
     if (DAY.phase === "day" && !DAY.out) {
       const far = Math.hypot(FLOCK_C.x - CAMP.x, FLOCK_C.z - CAMP.z);
-      if ((DAY.warnT -= dt) <= 0 && far > 300) { toast("Хонь ямаа хол явчихлаа! Ойртуулаад ир."); toastT = 4; DAY.warnT = 25; DAY.farWarned = true; }
+      if ((DAY.warnT -= dt) <= 0 && far > 300) { toast("⚠️ Хонь ямаа холдлоо шүү! Ойртуулаад ир."); toastT = 5; DAY.warnT = 20; DAY.farWarned = true; }
       if (far < 240 && DAY.farWarned) { DAY.farWarned = false; toast("Сайн байна, хонь ямаа ойртлоо."); }
     }
     if (DAY.phase === "evening") {
